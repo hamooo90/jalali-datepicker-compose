@@ -12,8 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.gmail.hamedvakhide.compose_jalali_datepicker.JalaliDatePickerDialog
-import com.gmail.hamedvakhide.jalalidatepicker.ui.theme.JalaliDatePickerTheme
 import ir.huri.jcal.JalaliCalendar
 
 class MainActivity : ComponentActivity() {
