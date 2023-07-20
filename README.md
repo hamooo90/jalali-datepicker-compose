@@ -1,6 +1,8 @@
 # jalali-datepicker-compose
-An Android library - built with jetpack compose - that offers Jalali/Persian calendar date picker.
-Easy to use, quick to implement and can be customized according to your application color and theme.
+An Android library - built with jetpack compose - that offers Jalali/Persian calendar date picker dialog.
+It's easy to use, quick to implement and can be customized according to your application color and theme.
+
+[![Download](https://img.shields.io/jitpack/version/com.github.hamooo90/jalali-datepicker-compose)](https://jitpack.io/#hamooo90/jalali-datepicker-compose)
 
 <img src="screenshot.png" alt="Library Image">
 
@@ -31,6 +33,9 @@ This library uses another library called [JalaliCalendar](https://github.com/raz
 ### Minimum Configuration
 ```kotlin
 val openDialog = remember { mutableStateOf(false) }
+Button(onClick = { openDialog.value = true }) {
+    Text(text = "Open JalaliDatePicker")
+}
 JalaliDatePickerDialog(
     openDialog = openDialog,
     onSelectDay = { //it:JalaliCalendar
@@ -44,6 +49,10 @@ JalaliDatePickerDialog(
 
 ### With customization
 ```kotlin
+val openDialog = remember { mutableStateOf(false) }
+Button(onClick = { openDialog.value = true }) {
+    Text(text = "Open JalaliDatePicker")
+}
 JalaliDatePickerDialog(
     openDialog = openDialog,
     initialDate = JalaliCalendar(1402, 1, 2),
@@ -64,3 +73,18 @@ jalali datepicker colors can be changed with the use of these parameters
 # Demo
 <img src="gif.gif" width="300" />
 
+# Licence
+
+    Copyright 2023 Hamed Vakhide
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.

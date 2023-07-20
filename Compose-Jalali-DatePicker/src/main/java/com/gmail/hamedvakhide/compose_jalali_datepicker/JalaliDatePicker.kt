@@ -80,7 +80,7 @@ import ir.huri.jcal.JalaliCalendar
  * @param nextPreviousBtnColor Color of next and previous month button.
  *
  */
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
 fun JalaliDatePickerDialog(
     openDialog: MutableState<Boolean>,
