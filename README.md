@@ -47,7 +47,7 @@ JalaliDatePickerDialog(
 )
 ```
 
-### With customization
+### With Customization
 ```kotlin
 val openDialog = remember { mutableStateOf(false) }
 Button(onClick = { openDialog.value = true }) {
@@ -73,9 +73,12 @@ jalali datepicker colors can be changed with the use of these parameters
 # Demo
 <img src="gif.gif" width="300" />
 
+# Credit 
+Special Thanks to [JalaliCalendar](https://github.com/razeghi71/JalaliCalendar/tree/master "by razeghi71")
+
 # Licence
 
-    Copyright 2023 Hamed Vakhide
+    Copyright 2023 Hamed Vakhideh
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
