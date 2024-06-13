@@ -56,14 +56,14 @@ class MainActivity : ComponentActivity() {
                 openDialog = openDialog,
 //                initialDate = JalaliCalendar(1402, 6, 2),
                 onSelectDay = {
-//                    Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
+                    Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
                 },
                 onConfirm = {
-//                    Log.d("Date", "onConfirm: ${it.day} ${it.monthString} ${it.year}")
+                    Log.d("Date", "onConfirm: ${it.day} ${it.monthString} ${it.year}")
                     selectedDate = it
                 },
-                backgroundColor = Color.Yellow,
-                textColor = Color.Blue
+//                backgroundColor = Color.Yellow,
+//                textColor = Color.Blue
             )
         }
     }
