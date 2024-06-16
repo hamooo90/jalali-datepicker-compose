@@ -58,7 +58,7 @@ afterEvaluate {
 
                 groupId = 'com.github.hamooo90'
                 artifactId = 'jalali-datepicker-compose'
-                version = '1.0.0'
+                version = '1.1.0'
             }
         }
     }
