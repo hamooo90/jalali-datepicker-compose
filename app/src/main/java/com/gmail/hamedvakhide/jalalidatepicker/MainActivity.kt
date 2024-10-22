@@ -19,6 +19,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -58,6 +62,8 @@ class MainActivity : ComponentActivity() {
                 fontFamily = FontFamily(
                     Font(R.font.bziba_0)
                 ),
+                disableBeforeDate = JalaliCalendar(1403,10,15),
+//                disableAfterDate = JalaliCalendar(1404, 9, 30),
 //                initialDate = JalaliCalendar(1402, 6, 2),
                 onSelectDay = {
                     Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")

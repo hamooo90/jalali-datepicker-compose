@@ -50,6 +50,10 @@ val ColorScheme.textColor: Color
     @Composable
     get() = if (!isSystemInDarkTheme()) Color.Black else Color.White
 
+val ColorScheme.textDisabledColor: Color
+    @Composable
+    get() = if (!isSystemInDarkTheme()) Color.DarkGray else Color.Gray
+
 val ColorScheme.textColorHighlight: Color
     @Composable
 //    get() = if (!isSystemInDarkTheme()) Color(0xFF55B5FF) else Color(0xFF209EFF)

@@ -29,6 +29,7 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,16 +46,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.Typography
 import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.backgroundColor
 import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.selectedIconColor
 import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.textColor
 import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.textColorHighlight
+import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.textDisabledColor
 import com.gmail.hamedvakhide.compose_jalali_datepicker.util.FormatHelper
 import com.gmail.hamedvakhide.compose_jalali_datepicker.util.PickerType
 
@@ -87,10 +91,13 @@ import ir.huri.jcal.JalaliCalendar
 fun JalaliDatePickerDialog(
     openDialog: MutableState<Boolean>,
     initialDate: JalaliCalendar? = null,
+    disableBeforeDate: JalaliCalendar? = null,
+    disableAfterDate: JalaliCalendar? = null,
     onSelectDay: (JalaliCalendar) -> Unit,
     onConfirm: (JalaliCalendar) -> Unit,
     backgroundColor: Color = MaterialTheme.colorScheme.backgroundColor,
     textColor: Color = MaterialTheme.colorScheme.textColor,
+    textDisabledColor: Color = MaterialTheme.colorScheme.textDisabledColor,
     selectedIconColor: Color = MaterialTheme.colorScheme.selectedIconColor,
     textColorHighlight: Color = MaterialTheme.colorScheme.textColorHighlight,
     dropDownColor: Color = MaterialTheme.colorScheme.textColor,
@@ -131,6 +138,8 @@ fun JalaliDatePickerDialog(
                     JalaliCalendarView(
                         openDialog = openDialog,
                         initialDate = initialDate,
+                        disableBeforeDate = disableBeforeDate,
+                        disableAfterDate = disableAfterDate,
                         onSelectDay = {
                             onSelectDay(it)
 //                            Log.d("DAGDAG", "onSelect: ${it.day} ${it.monthString} ${it.year}")
@@ -145,6 +154,7 @@ fun JalaliDatePickerDialog(
                         selectedIconColor = selectedIconColor,
                         textColorHighlight = textColorHighlight,
                         textColor = textColor,
+                        textDisabledColor = textDisabledColor,
                         cancelBtnColor = cancelBtnColor,
                         confirmBtnColor = confirmBtnColor,
                         todayBtnColor = todayBtnColor,
@@ -165,11 +175,14 @@ fun JalaliDatePickerDialog(
 fun JalaliCalendarView(
 //        modifier: Modifier = Modifier,
     initialDate: JalaliCalendar?,
+    disableBeforeDate: JalaliCalendar?,
+    disableAfterDate: JalaliCalendar?,
     openDialog: MutableState<Boolean>,
     onSelectDay: (JalaliCalendar) -> Unit,
     onConfirm: (JalaliCalendar) -> Unit,
     backgroundColor: Color,
     textColor: Color,
+    textDisabledColor: Color,
     selectedIconColor: Color,
     textColorHighlight: Color,
     dropDownColor: Color,
@@ -246,13 +259,32 @@ fun JalaliCalendarView(
                             JalaliCalendar(jalali.year + 1, 1, 1)
                         }
                     },
+                    enabled = if (disableAfterDate != null && JalaliCalendar(
+                            jalali.year,
+                            jalali.month,
+                            jalali.monthLength
+                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis
+                    ) {
+                        false
+                    } else {
+                        true
+                    },
                     modifier = Modifier.size(iconSize),
 //                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.dialogNavigationButton)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.KeyboardArrowLeft,
                         contentDescription = "",
-                        tint = nextPreviousBtnColor
+                        tint = if (disableAfterDate != null && JalaliCalendar(
+                                jalali.year,
+                                jalali.month,
+                                jalali.monthLength
+                            ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis
+                        ) {
+                            textDisabledColor
+                        } else {
+                            nextPreviousBtnColor
+                        }
                     )
                 }
             } else {
@@ -311,13 +343,32 @@ fun JalaliCalendarView(
                             JalaliCalendar(jalali.year - 1, 12, 1)
                         }
                     },
+                    enabled = if (disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            jalali.month,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis
+                    ) {
+                        false
+                    } else {
+                        true
+                    },
                     modifier = Modifier.size(iconSize)
 //                    colors = IconButtonDefaults.filledIconButtonColors(containerColor = MaterialTheme.colorScheme.dialogNavigationButton)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.KeyboardArrowRight,
                         contentDescription = "",
-                        tint = nextPreviousBtnColor
+                        tint = if (disableBeforeDate != null && JalaliCalendar(
+                                jalali.year,
+                                jalali.month,
+                                1
+                            ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis
+                        ) {
+                            textDisabledColor
+                        } else {
+                            nextPreviousBtnColor
+                        }
                     )
                 }
             } else {
@@ -378,13 +429,42 @@ fun JalaliCalendarView(
                                             selectedIconColor
                                         else
                                             Color.Transparent
-                                    )
+                                    ),
+                                    enabled = if ((disableBeforeDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            jalali.month,
+                                            selectDay
+                                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            jalali.month,
+                                            selectDay
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis)
+                                    ) {
+                                        false
+                                    } else {
+                                        true
+                                    }
+
                                 ) {
 
                                     Text(
                                         text = FormatHelper.toPersianNumber(day.toString()),
-                                        color = if (day == today.day && jalali.year == today.year && jalali.month == today.month) {
+                                        color =
+                                        if (day == today.day && jalali.year == today.year && jalali.month == today.month) {
                                             textColorHighlight
+                                        } else if ((disableBeforeDate != null && JalaliCalendar(
+                                                jalali.year,
+                                                jalali.month,
+                                                selectDay
+                                            ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                            (disableAfterDate != null && JalaliCalendar(
+                                                jalali.year,
+                                                jalali.month,
+                                                selectDay
+                                            ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis)
+                                        ) {
+                                            textDisabledColor
                                         } else {
                                             textColor
 
@@ -438,43 +518,156 @@ fun JalaliCalendarView(
                         .padding(horizontal = 4.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 4, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 4, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            4,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    4,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "تیر",
-                            color = monthTextColorFun(4, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                4,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    4,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            4,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 3, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 3, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            3,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    3,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    )
+                    {
                         Text(
                             text = "خرداد",
-                            color = monthTextColorFun(3, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                3,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    3,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            3,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 2, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 2, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            2,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    2,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "اردیبهشت",
-                            color = monthTextColorFun(2, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                2,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    2,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            2,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 1, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 1, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            1,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    1,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "فروردین",
-                            color = monthTextColorFun(1, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                1,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    1,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            1,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
@@ -485,43 +678,155 @@ fun JalaliCalendarView(
                         .padding(horizontal = 4.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 8, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 8, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            8,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    8,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "آبان",
-                            color = monthTextColorFun(8, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                8,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    8,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            8,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 7, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 7, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            7,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    7,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "مهر",
-                            color = monthTextColorFun(7, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                7,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    7,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            7,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 6, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 6, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            6,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    6,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "شهریور",
-                            color = monthTextColorFun(6, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                6,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    6,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            6,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 5, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 5, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            5,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    5,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "مرداد",
-                            color = monthTextColorFun(5, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                5,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    5,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            5,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
@@ -535,39 +840,151 @@ fun JalaliCalendarView(
                     TextButton(onClick = {
                         jalali = JalaliCalendar(jalali.year, 12, 1)
                         pickerType = PickerType.Day
-                    }) {
+                    },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            12,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    12,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "اسفند",
-                            color = monthTextColorFun(12, jalali, textColorHighlight, textColor)
+                            color = monthTextColorFun(
+                                12,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    12,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            12,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
+                            fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 11, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 11, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            11,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    11,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "بهمن",
-                            color = monthTextColorFun(11, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                11,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    11,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            11,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 10, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 10, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            10,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    10,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "دی",
-                            color = monthTextColorFun(10, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                10,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    10,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            10,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 9, 1)
-                        pickerType = PickerType.Day
-                    }) {
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 9, 1)
+                            pickerType = PickerType.Day
+                        },
+                        enabled = !((disableBeforeDate != null && JalaliCalendar(
+                            jalali.year,
+                            9,
+                            1
+                        ).toGregorian().timeInMillis <= disableBeforeDate.toGregorian().timeInMillis) ||
+                                (disableAfterDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    9,
+                                    1
+                                ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis))
+                    ) {
                         Text(
                             text = "آذر",
-                            color = monthTextColorFun(9, jalali, textColorHighlight, textColor),
+                            color = monthTextColorFun(
+                                9,
+                                jalali,
+                                isDisabled = (disableBeforeDate != null && JalaliCalendar(
+                                    jalali.year,
+                                    9,
+                                    1
+                                ).toGregorian().timeInMillis < disableBeforeDate.toGregorian().timeInMillis) ||
+                                        (disableAfterDate != null && JalaliCalendar(
+                                            jalali.year,
+                                            9,
+                                            1
+                                        ).toGregorian().timeInMillis >= disableAfterDate.toGregorian().timeInMillis),
+                                textColorHighlight,
+                                textColor,
+                                textDisabledColor
+                            ),
                             fontFamily = fontFamily
                         )
                     }
@@ -602,10 +1019,37 @@ fun JalaliCalendarView(
                         Divider()
                         Box(modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                jalali = JalaliCalendar(index, jalali.month, 1)
-                                pickerType = PickerType.Day
-                            }
+                            .clickable(
+                                enabled = if ((disableBeforeDate != null && index < disableBeforeDate.year) ||
+                                    (disableAfterDate != null && index > disableAfterDate.year)
+                                ) {
+                                    false
+                                } else {
+                                    true
+                                },
+                                onClick = {
+                                    var tempJalali = JalaliCalendar(index, jalali.month, 1)
+                                    if (disableBeforeDate != null && index <= disableBeforeDate.year && jalali.month <= disableBeforeDate.month){
+//                                        if (disableBeforeDate.day==31) {
+//                                            tempJalali = disableBeforeDate.tomorrow
+//                                            tempJalali = JalaliCalendar(tempJalali.year,tempJalali.month,1)
+//                                        } else{
+                                            tempJalali = JalaliCalendar(index, disableBeforeDate.tomorrow.month, 1)
+//                                        }
+                                    }
+                                    else if(disableAfterDate != null && index >= disableAfterDate.year && jalali.month >= disableAfterDate.month){
+                                        tempJalali = JalaliCalendar(index, disableAfterDate.yesterday.month, 1)
+
+                                    }
+                                    jalali = tempJalali
+                                    pickerType = PickerType.Day
+                                }
+                            )
+//                            .clickable {
+//
+//                                jalali = JalaliCalendar(index, jalali.month, 1)
+//                                pickerType = PickerType.Day
+//                            }
                             .padding(vertical = 4.dp),
                             contentAlignment = Alignment.Center
                         ) {
@@ -616,10 +1060,16 @@ fun JalaliCalendarView(
                                 color = yearTextColorFun(
                                     jalali.year,
                                     index,
+                                    isDisabled = if ((disableBeforeDate != null && index < disableBeforeDate.year) ||
+                                        (disableAfterDate != null && index > disableAfterDate.year)
+                                    ) {
+                                        true
+                                    } else false,
                                     textColorHighlight,
-                                    textColor
+                                    textColor,
+                                    textDisabledColor
                                 ),
-                                fontFamily = fontFamily
+                                fontFamily = fontFamily,
                             )
                         }
                     }
@@ -683,10 +1133,14 @@ fun JalaliCalendarView(
 fun monthTextColorFun(
     currentMonth: Int,
     jalali: JalaliCalendar,
+    isDisabled: Boolean,
     textColorHighlight: Color,
-    textColor: Color
+    textColor: Color,
+    textDisabledColor: Color
 ): Color {
-    return if (jalali.month == currentMonth) {
+    return if (isDisabled)
+        textDisabledColor
+    else if (jalali.month == currentMonth) {
         textColorHighlight
     } else {
         textColor
@@ -697,10 +1151,15 @@ fun monthTextColorFun(
 fun yearTextColorFun(
     currentYear: Int,
     yearIndex: Int,
+    isDisabled: Boolean,
     textColorHighlight: Color,
-    textColor: Color
+    textColor: Color,
+    textDisabledColor: Color
+
 ): Color {
-    return if (currentYear == yearIndex) {
+    return if (isDisabled)
+        textDisabledColor
+    else if (currentYear == yearIndex) {
         textColorHighlight
     } else {
         textColor
