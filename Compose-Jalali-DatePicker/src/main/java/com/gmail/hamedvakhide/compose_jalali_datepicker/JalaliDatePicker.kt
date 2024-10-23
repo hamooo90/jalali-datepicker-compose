@@ -29,7 +29,6 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -41,19 +40,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.Typography
 import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.backgroundColor
 import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.selectedIconColor
 import com.gmail.hamedvakhide.compose_jalali_datepicker.ui.theme.textColor
@@ -70,6 +66,8 @@ import ir.huri.jcal.JalaliCalendar
  * Example usage:
  *
  * @param openDialog Dialog will be visible as long as openDialog value is true.
+ * @param disableBeforeDate Days before this date are disabled and can't be selected.
+ * @param disableAfterDate Days after this date are disabled and can't be selected.
  * @param initialDate Specify a date to be shown when dialog opens.
  * @param onSelectDay Called when a day is selected.
  * @param onConfirm Called when confirm button is clicked.
@@ -84,6 +82,7 @@ import ir.huri.jcal.JalaliCalendar
  * @param todayBtnColor Color of today button.
  * @param nextPreviousBtnColor Color of next and previous month button.
  * @param fontFamily changing font for all the text.
+ * @param fontSize changing font size for all the text.
  *
  */
 
@@ -106,7 +105,8 @@ fun JalaliDatePickerDialog(
     cancelBtnColor: Color = MaterialTheme.colorScheme.textColorHighlight,
     todayBtnColor: Color = MaterialTheme.colorScheme.textColorHighlight,
     nextPreviousBtnColor: Color = MaterialTheme.colorScheme.textColor,
-    fontFamily: FontFamily = FontFamily.Default
+    fontFamily: FontFamily = FontFamily.Default,
+    fontSize: TextUnit = 14.sp
 ) {
     if (openDialog.value) {
         Dialog(
@@ -159,8 +159,8 @@ fun JalaliDatePickerDialog(
                         confirmBtnColor = confirmBtnColor,
                         todayBtnColor = todayBtnColor,
                         nextPreviousBtnColor = nextPreviousBtnColor,
-                        fontFamily = fontFamily
-
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
                     )
                 }
             }
@@ -191,7 +191,8 @@ fun JalaliCalendarView(
     cancelBtnColor: Color,
     todayBtnColor: Color,
     nextPreviousBtnColor: Color,
-    fontFamily: FontFamily
+    fontFamily: FontFamily,
+    fontSize: TextUnit
 ) {
     var iconSize: Dp by remember {
         mutableStateOf(43.dp)
@@ -295,7 +296,7 @@ fun JalaliCalendarView(
                         .alpha(0f),
                     colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.Transparent)
                 ) {
-                    Text(text = "X")
+                    Text(text = "X", fontSize = fontSize)
                 }
             }
 
@@ -311,7 +312,8 @@ fun JalaliCalendarView(
                 Text(
                     text = FormatHelper.toPersianNumber(jalali.year.toString()),
                     color = dropDownColor,
-                    fontFamily = fontFamily
+                    fontFamily = fontFamily,
+                    fontSize = fontSize
                 )
                 Icon(
                     imageVector = Icons.Outlined.ArrowDropDown,
@@ -326,7 +328,12 @@ fun JalaliCalendarView(
                 else
                     PickerType.Day
             }) {
-                Text(text = jalali.monthString, color = dropDownColor, fontFamily = fontFamily)
+                Text(
+                    text = jalali.monthString,
+                    color = dropDownColor,
+                    fontFamily = fontFamily,
+                    fontSize = fontSize
+                )
                 Icon(
                     imageVector = Icons.Outlined.ArrowDropDown,
                     contentDescription = "",
@@ -379,7 +386,7 @@ fun JalaliCalendarView(
                         .alpha(0f),
                     colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.Transparent)
                 ) {
-                    Text(text = "X")
+                    Text(text = "X", fontSize = fontSize)
                 }
             }
 
@@ -393,13 +400,48 @@ fun JalaliCalendarView(
                         .padding(vertical = weekDaysLabelPadding),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    Text(text = "ج", color = dayOfWeekLabelColor, fontFamily = fontFamily)
-                    Text(text = "پ", color = dayOfWeekLabelColor, fontFamily = fontFamily)
-                    Text(text = "چ", color = dayOfWeekLabelColor, fontFamily = fontFamily)
-                    Text(text = "س", color = dayOfWeekLabelColor, fontFamily = fontFamily)
-                    Text(text = "د", color = dayOfWeekLabelColor, fontFamily = fontFamily)
-                    Text(text = "ی", color = dayOfWeekLabelColor, fontFamily = fontFamily)
-                    Text(text = "ش", color = dayOfWeekLabelColor, fontFamily = fontFamily)
+                    Text(
+                        text = "ج",
+                        color = dayOfWeekLabelColor,
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
+                    )
+                    Text(
+                        text = "پ",
+                        color = dayOfWeekLabelColor,
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
+                    )
+                    Text(
+                        text = "چ",
+                        color = dayOfWeekLabelColor,
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
+                    )
+                    Text(
+                        text = "س",
+                        color = dayOfWeekLabelColor,
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
+                    )
+                    Text(
+                        text = "د",
+                        color = dayOfWeekLabelColor,
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
+                    )
+                    Text(
+                        text = "ی",
+                        color = dayOfWeekLabelColor,
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
+                    )
+                    Text(
+                        text = "ش",
+                        color = dayOfWeekLabelColor,
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
+                    )
                 }
 
                 var jomeh = firstJomeh
@@ -469,7 +511,8 @@ fun JalaliCalendarView(
                                             textColor
 
                                         },
-                                        fontFamily = fontFamily
+                                        fontFamily = fontFamily,
+                                        fontSize = fontSize
                                     )
                                 }
 
@@ -484,7 +527,7 @@ fun JalaliCalendarView(
                                     )
                                 ) {
                                     Text(
-                                        text = day.toString(), fontFamily = fontFamily
+                                        text = day.toString(), fontFamily = fontFamily, fontSize = fontSize
                                     )
                                 }
                             }
@@ -509,7 +552,8 @@ fun JalaliCalendarView(
                     Text(
                         color = MaterialTheme.colorScheme.textColor,
                         text = "انتخاب ماه",
-                        fontFamily = fontFamily
+                        fontFamily = fontFamily,
+                        fontSize = fontSize
                     )
                 }
                 Row(
@@ -553,7 +597,8 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily,
+                            fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -592,7 +637,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -630,7 +675,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -668,7 +713,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                 }
@@ -713,7 +758,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -751,7 +796,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -789,7 +834,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -827,7 +872,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                 }
@@ -837,10 +882,11 @@ fun JalaliCalendarView(
                         .padding(horizontal = 4.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    TextButton(onClick = {
-                        jalali = JalaliCalendar(jalali.year, 12, 1)
-                        pickerType = PickerType.Day
-                    },
+                    TextButton(
+                        onClick = {
+                            jalali = JalaliCalendar(jalali.year, 12, 1)
+                            pickerType = PickerType.Day
+                        },
                         enabled = !((disableBeforeDate != null && JalaliCalendar(
                             jalali.year,
                             12,
@@ -871,7 +917,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -909,7 +955,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -947,7 +993,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                     TextButton(
@@ -985,7 +1031,7 @@ fun JalaliCalendarView(
                                 textColor,
                                 textDisabledColor
                             ),
-                            fontFamily = fontFamily
+                            fontFamily = fontFamily, fontSize = fontSize
                         )
                     }
                 }
@@ -1002,7 +1048,7 @@ fun JalaliCalendarView(
                         modifier = Modifier.padding(vertical = 8.dp),
                         color = MaterialTheme.colorScheme.textColor,
                         text = "انتخاب سال",
-                        fontFamily = fontFamily
+                        fontFamily = fontFamily, fontSize = fontSize
                     )
                 }
                 val scrollState =
@@ -1029,16 +1075,23 @@ fun JalaliCalendarView(
                                 },
                                 onClick = {
                                     var tempJalali = JalaliCalendar(index, jalali.month, 1)
-                                    if (disableBeforeDate != null && index <= disableBeforeDate.year && jalali.month <= disableBeforeDate.month){
+                                    if (disableBeforeDate != null && index <= disableBeforeDate.year && jalali.month <= disableBeforeDate.month) {
 //                                        if (disableBeforeDate.day==31) {
 //                                            tempJalali = disableBeforeDate.tomorrow
 //                                            tempJalali = JalaliCalendar(tempJalali.year,tempJalali.month,1)
 //                                        } else{
-                                            tempJalali = JalaliCalendar(index, disableBeforeDate.tomorrow.month, 1)
+                                        tempJalali = JalaliCalendar(
+                                            index,
+                                            disableBeforeDate.tomorrow.month,
+                                            1
+                                        )
 //                                        }
-                                    }
-                                    else if(disableAfterDate != null && index >= disableAfterDate.year && jalali.month >= disableAfterDate.month){
-                                        tempJalali = JalaliCalendar(index, disableAfterDate.yesterday.month, 1)
+                                    } else if (disableAfterDate != null && index >= disableAfterDate.year && jalali.month >= disableAfterDate.month) {
+                                        tempJalali = JalaliCalendar(
+                                            index,
+                                            disableAfterDate.yesterday.month,
+                                            1
+                                        )
 
                                     }
                                     jalali = tempJalali
@@ -1056,7 +1109,8 @@ fun JalaliCalendarView(
                             Text(
 
                                 text = FormatHelper.toPersianNumber(index.toString()),
-                                fontSize = 30.sp,
+//                                fontSize = yearSelectorFontSize,
+                                fontSize = fontSize*2.1,
                                 color = yearTextColorFun(
                                     jalali.year,
                                     index,
@@ -1092,14 +1146,14 @@ fun JalaliCalendarView(
                             openDialog.value = false
                         }) {
                         if (selectedDate == null)
-                            Text(text = "تایید", fontFamily = fontFamily)
+                            Text(text = "تایید", fontFamily = fontFamily, fontSize = fontSize)
                         else
-                            Text(text = "تایید", color = confirmBtnColor, fontFamily = fontFamily)
+                            Text(text = "تایید", color = confirmBtnColor, fontFamily = fontFamily, fontSize = fontSize)
                     }
                     TextButton(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         onClick = { openDialog.value = false }) {
-                        Text(text = "انصراف", color = cancelBtnColor, fontFamily = fontFamily)
+                        Text(text = "انصراف", color = cancelBtnColor, fontFamily = fontFamily, fontSize = fontSize)
                     }
                 }
 
@@ -1121,7 +1175,7 @@ fun JalaliCalendarView(
                         onSelectDay(selectedDate!!)
                     }
                 ) {
-                    Text(text = "امروز", color = todayBtnColor, fontFamily = fontFamily)
+                    Text(text = "امروز", color = todayBtnColor, fontFamily = fontFamily, fontSize = fontSize)
                 }
             }
         }

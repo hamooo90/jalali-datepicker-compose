@@ -2,7 +2,6 @@ package com.gmail.hamedvakhide.jalalidatepicker
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -19,10 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
@@ -51,7 +44,7 @@ class MainActivity : ComponentActivity() {
                 Text(
                     modifier = Modifier.padding(vertical = 8.dp),
                     text = "Selected Date: ${selectedDate?.year}/${selectedDate?.month}/${selectedDate?.day}",
-                    fontSize = 22.sp
+                    fontSize = 22.sp,
                 )
             }
 
@@ -62,8 +55,8 @@ class MainActivity : ComponentActivity() {
                 fontFamily = FontFamily(
                     Font(R.font.bziba_0)
                 ),
-                disableBeforeDate = JalaliCalendar(1403,10,15),
-//                disableAfterDate = JalaliCalendar(1404, 9, 30),
+//                disableBeforeDate = JalaliCalendar(1403,10,15),
+                disableAfterDate = JalaliCalendar(1404, 9, 30),
 //                initialDate = JalaliCalendar(1402, 6, 2),
                 onSelectDay = {
                     Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
@@ -74,6 +67,7 @@ class MainActivity : ComponentActivity() {
                 },
 //                backgroundColor = Color.Yellow,
 //                textColor = Color.Blue
+//                fontSize = 14.sp,
             )
         }
     }
