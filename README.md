@@ -22,7 +22,7 @@ Add the dependencies to app-level build.gradle file
 ```gradle
 dependencies {
     ...
-    implementation 'com.github.hamooo90:jalali-datepicker-compose:1.1.1'
+    implementation 'com.github.hamooo90:jalali-datepicker-compose:1.2.0'
     implementation 'ir.huri:JalaliCalendar:1.3.3'
 }
 ```
@@ -56,9 +56,12 @@ Button(onClick = { openDialog.value = true }) {
 JalaliDatePickerDialog(
     openDialog = openDialog,
     fontFamily = FontFamily(
-                    Font(R.font.bziba_0)
+        Font(R.font.bziba_0)
     ),
-    initialDate = JalaliCalendar(1402, 1, 2),
+    fontSize = 17.sp,
+    disableBeforeDate = JalaliCalendar(1403,10,15), //Days before this date are disabled and can't be selected.
+    disableAfterDate = JalaliCalendar(1404, 9, 30), //Days after this date are disabled and can't be selected.
+    initialDate = JalaliCalendar(1403, 11, 2),
     onSelectDay = { //it:JalaliCalendar
         Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
     },

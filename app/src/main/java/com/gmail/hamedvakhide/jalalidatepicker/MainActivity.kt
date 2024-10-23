@@ -55,9 +55,9 @@ class MainActivity : ComponentActivity() {
                 fontFamily = FontFamily(
                     Font(R.font.bziba_0)
                 ),
-//                disableBeforeDate = JalaliCalendar(1403,10,15),
+                disableBeforeDate = JalaliCalendar(1403,10,15),
                 disableAfterDate = JalaliCalendar(1404, 9, 30),
-//                initialDate = JalaliCalendar(1402, 6, 2),
+                initialDate = JalaliCalendar(1403, 11, 2),
                 onSelectDay = {
                     Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
                 },
@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                 },
 //                backgroundColor = Color.Yellow,
 //                textColor = Color.Blue
-//                fontSize = 14.sp,
+//                fontSize = 19.sp,
             )
         }
     }
